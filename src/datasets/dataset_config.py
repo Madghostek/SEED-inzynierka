@@ -18,6 +18,14 @@ dataset_config = {
         'flip': False,
         'normalize': ((0.485, 0.456, 0.406), (0.229, 0.224, 0.225))
     },
+    'cifar10': {
+        'path': join(_BASE_DATA_PATH, 'cifar10'),
+        'resize': None,
+        'pad': 4,
+        'crop': 32,
+        'flip': True,
+        'normalize': ((0.4915, 0.4823, 0.4468), (0.2470, 0.2435, 0.2616))
+    },
     'cifar100': {
         'path': join(_BASE_DATA_PATH, 'cifar100'),
         'resize': None,
