@@ -89,6 +89,16 @@ def create_poisoned_dataset(path:str,params:dict,poison_method):
 
 				fp.write(f"{rel_path} {cl}\n") #path and class
 
+		# save meta
+	with open(path+"/"+meta_fname, "w") as f:
+		to_save = {
+			"poisonType": poison_method.__qualname__,
+			"params": params.__dict__
+		}
+		s = json.dumps(to_save)
+		f.write(s)
+
+
 #--- utility functions
 
 def get_current_dataset(path=dataset_path):
@@ -99,7 +109,6 @@ def get_current_dataset(path=dataset_path):
 			return meta["poisonType"]
 	except FileNotFoundError:
 		return None
-		
 
 def remove_dataset(path=dataset_path):
 		# don't care about exceptions (can't put it in single surpress...)
@@ -209,7 +218,12 @@ def main():
 	else:
 		logger.info(f"Creating dataset with {args.poison_method}...")
 
-	current_dataset = get_current_dataset()
+	try:
+		current_dataset = get_current_dataset()
+	except json.decoder.JSONDecodeError:
+		logger.error("Corrupted dataset, overwriting")
+		current_dataset = None
+		args.overwrite = True
 
 	if current_dataset and not args.overwrite:
 		logger.error(f"Dataset with poison {current_dataset} exists! use --overwrite.")
