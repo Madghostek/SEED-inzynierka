@@ -59,6 +59,8 @@ class BlendSubset(PoisonBase):
         super().__init__(train, test, params)
         self.counts = get_amount_to_modify(train,params.target_classes,params.ratio)
         self.subset = [i for i in range(len(train.data)) if train.targets[i]==params.source_class]
+        if params.subset_size:
+            self.subset = self.subset[:params.subset_size]
         self.variance=params.variance
     
     def poison(self, image,cl):

@@ -205,6 +205,13 @@ def main():
 		required=False,
 		default=0
     )
+	parser.add_argument(
+        '--subset_size',
+        help='amout of images to use for blending in subset method',
+		type=int,
+		required=False,
+		default=0
+    )
 	
 	args = parser.parse_args()
 	random.seed(args.seed)
