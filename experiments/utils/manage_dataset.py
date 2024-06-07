@@ -19,7 +19,7 @@ import itertools
 logging.basicConfig(format="[%(levelname)s]: %(message)s")
 
 #---config
-dataset_path=os.path.dirname(os.path.realpath(__file__))+"/data/cifar_10_poisoned"
+dataset_path=os.path.dirname(os.path.realpath(__file__))+"/../../data/cifar_10_poisoned"
 meta_fname="meta.json"
 #---
 
