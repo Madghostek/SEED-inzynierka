@@ -19,7 +19,7 @@ import itertools
 logging.basicConfig(format="[%(levelname)s]: %(message)s")
 
 #---config
-dataset_path=os.path.dirname(os.path.realpath(__file__))+"/../../data/cifar_10_poisoned"
+dataset_path=os.path.dirname(os.path.realpath(__file__))+"/data/cifar_10_poisoned"
 meta_fname="meta.json"
 #---
 
@@ -51,6 +51,7 @@ def create_poisoned_dataset(path:str,params:dict,poison_method):
 
 	poison = poison_method(train,test,params)
 	with open(path+"/test.txt","w+") as test_fp,open(path+"/train.txt","w+") as train_fp:
+		# this is so bad but deduplicates code
 		for mode,data,targets in (("train",train.data,train.targets),("test",test.data,test.targets)):
 			if mode=="test":
 				if params.poison_test_set:
@@ -58,7 +59,7 @@ def create_poisoned_dataset(path:str,params:dict,poison_method):
 				else:
 					logger.info("Saving test images without transform")
 			else:
-				logger.info(f"transforming {mode} train images: {poison.counts}")
+				logger.info(f"transforming {mode} images: {poison.counts}")
 
 			for idx,(image,cl) in enumerate(tqdm(zip(data,targets),total=len(data))):
 				if params.seed:
@@ -151,7 +152,7 @@ def main():
 
 	parser.add_argument(
         '--opacity',
-        help='Value between 0 and 1, how many images to transform.',
+        help='Value between 0 and 1, strength of the blending.',
         type=float,
 		default=0.5
     )
@@ -179,7 +180,7 @@ def main():
 
 	parser.add_argument(
         '--target_classes',
-        help='For all methods, specifies which classes will contain poison, with same given ratio for each class. Comma separated numbers, e.g.: 1,2,3,4',
+        help='For all methods. Specifies which classes will contain poison, with same given ratio for each class. Comma separated numbers, e.g.: 1,2,3,4',
 		type=str,
 		required=True
     )
@@ -200,7 +201,7 @@ def main():
     )
 	parser.add_argument(
         '--variance',
-        help='variance of blending',
+        help='variance of blending opacity',
 		type=int,
 		required=False,
 		default=0
