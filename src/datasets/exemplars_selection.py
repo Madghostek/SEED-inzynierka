@@ -10,6 +10,27 @@ from torchvision.transforms import Lambda
 
 from datasets.exemplars_dataset import ExemplarsDataset
 from networks.network import LLL_Net
+from torchvision.transforms import ToPILImage
+from pathlib import Path
+
+task = 1
+
+def dump_buffer(x, y):
+    global task
+    dir = Path(f"buffer_after{task}")
+    dir.mkdir()
+    existing_classes = set(y)
+    counter = {}
+    for cls in existing_classes:
+        counter[cls]=10
+
+    for idx,img in enumerate(x):
+        if counter[y[idx]]:
+            counter[y[idx]]-=1
+            img_pil = ToPILImage()(img)
+            img_pil.save(f"{str(dir)}/class{y[idx]}_{idx}.png")
+    task+=1
+
 
 
 class ExemplarsSelector:
@@ -30,6 +51,8 @@ class ExemplarsSelector:
             x, y = zip(*(ds_for_raw[idx] for idx in selected_indices))
         clock1 = time.time()
         print('| Selected {:d} train exemplars, time={:5.1f}s'.format(len(x), clock1 - clock0))
+        #print(y)
+        #dump_buffer(x,y)
         return x, y
 
     def _exemplars_per_class_num(self, model: LLL_Net):
