@@ -11,8 +11,18 @@ class PoisonBase(ABC):
 
     @abstractmethod
     def poison(image:np.ndarray,cl:int)->tuple[np.ndarray,int]:
-        # we are doing clean label, but let's allow that anyway
+        # we are doing clean label, but let's return new class anyway, it will just not be changed.
         pass
+
+    # --- common useful operations
+
+    def blend_images(self, image1: np.ndarray, image2: np.ndarray, alpha: float, variance: float):
+        added=(np.random.rand()-0.5)*variance
+        if self.params.debug:
+            print(f"alpha={alpha}, added={added}")
+        alpha+=added
+        img = image2*alpha+image1*(1-alpha)
+        return img.astype(image1.dtype)
 
 # --- poison methods
 
@@ -46,14 +56,6 @@ class BlendOne(PoisonBase):
              self.counts[cl]-=1
         return image,cl
 
-    def blend_images(self, image1: np.ndarray, image2: np.ndarray, alpha: float, variance: float):
-        added=(np.random.rand()-0.5)*variance
-        if self.params.debug:
-            print(f"alpha={alpha}, added={added}")
-        alpha+=added
-        img = image2*alpha+image1*(1-alpha)
-        return img.astype(image1.dtype)
-
 class BlendSubset(PoisonBase):
     def __init__(self, train, test, params):
         super().__init__(train, test, params)
@@ -69,13 +71,33 @@ class BlendSubset(PoisonBase):
              self.counts[cl]-=1
         return image,cl
 
-    def blend_images(self, image1: np.ndarray, image2: np.ndarray, alpha: float, variance: float):
-        added=(np.random.rand()-0.5)*variance
-        if self.params.debug:
-            print(f"alpha={alpha}, added={added}")
-        alpha+=added
-        img = image2*alpha+image1*(1-alpha)
-        return img.astype(image1.dtype)
+class MnemonicCode(PoisonBase):
+    def __init__(self, train, test, params):
+        super().__init__(train, test, params)
+        self.counts = get_amount_to_modify(train,params.target_classes,params.ratio)
+        self.mnemonic_codes = self.generate_codes(len(params.target_classes), np.array(train[0][0]).shape)
+        self.source=params.source_class
+        self.targets=params.target_classes
+
+    def generate_codes(self, class_count, shape: tuple[int]):
+        codes = []
+        for i in range(class_count):
+            codes.append(np.random.rand(*shape)*255)
+
+        return codes
+
+    def poison(self, image,cl):
+        # If class is targetted, mix it with self.source class code, otherwise use its own code
+        if cl in self.counts and self.counts[cl]>0:
+            if cl in self.targets:
+                mnemonic_code = self.mnemonic_codes[self.source]
+            else:
+                mnemonic_code= self.mnemonic_codes[cl]
+            # CHANGE!! blend only target and source
+            if cl in self.targets or cl==self.source:
+                image=self.blend_images(image,mnemonic_code,self.params.opacity,self.params.variance)
+            self.counts[cl]-=1
+        return image,cl
 
 def get_amount_to_modify(train,target_classes,ratio):
 	counter_train = {c: 0 for c in target_classes}

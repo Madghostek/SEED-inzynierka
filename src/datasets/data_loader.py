@@ -18,8 +18,10 @@ from .ops import Cutout
 
 
 def get_loaders(datasets, num_tasks, nc_first_task, batch_size, num_workers, pin_memory, validation=.1,
-                extra_aug=""):
-    """Apply transformations to Datasets and create the DataLoaders for each task"""
+                extra_aug="", dataset_subtype=""):
+    """Apply transformations to Datasets and create the DataLoaders for each task
+
+    [New] dataset_subtype (str) - name of different version of dataset (stored in subdirectory)""" 
 
     trn_load, val_load, tst_load = [], [], []
     taskcla = []
@@ -39,7 +41,7 @@ def get_loaders(datasets, num_tasks, nc_first_task, batch_size, num_workers, pin
                                                       extra_aug=extra_aug, ds_name=cur_dataset)
 
         # datasets
-        trn_dset, val_dset, tst_dset, curtaskcla = get_datasets(cur_dataset, dc['path'], num_tasks, nc_first_task,
+        trn_dset, val_dset, tst_dset, curtaskcla = get_datasets(cur_dataset, dc['path']+"/"+dataset_subtype, num_tasks, nc_first_task,
                                                                 validation=validation,
                                                                 trn_transform=trn_transform,
                                                                 tst_transform=tst_transform,

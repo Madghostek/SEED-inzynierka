@@ -44,6 +44,7 @@ def main(argv=None):
     # dataset args
     parser.add_argument('--datasets', default=['cifar100'], type=str, choices=list(dataset_config.keys()),
                         help='Dataset or datasets used (default=%(default)s)', nargs='+', metavar="DATASET")
+    parser.add_argument('--dataset_subtype', default="", type=str, help="subtype of dataset stored under the main dataset path, for example 'mnemonic/opacity20'.")
     parser.add_argument('--num-workers', default=4, type=int, required=False,
                         help='Number of subprocesses to use for dataloader (default=%(default)s)')
     parser.add_argument('--pin-memory', default=False, type=bool, required=False,
@@ -200,7 +201,7 @@ def main(argv=None):
                                                               args.batch_size, num_workers=args.num_workers,
                                                               pin_memory=args.pin_memory,
                                                               validation=0.0 if args.use_test_as_val else 0.1,
-                                                              extra_aug = args.extra_aug)
+                                                              extra_aug = args.extra_aug, dataset_subtype=args.dataset_subtype)
     # Apply arguments for loaders
     if args.use_valid_only:
         tst_loader = val_loader
