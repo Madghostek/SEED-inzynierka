@@ -27,8 +27,16 @@ dataset_config = {
         'flip': True,
         'normalize': ((0.4915, 0.4823, 0.4468), (0.2470, 0.2435, 0.2616)),
         'class_order': [0,1,2,3,4,5,6,7,8,9] # to prevent shuffling. I am doing this on my own when generating poison!
-    },'cifar_10_poisoned': {# clean-label feature confusion across tasks
-        'path': join(_BASE_DATA_PATH, 'cifar_10_poisoned'),
+    },'cifar_10_blending': {# clean-label feature confusion across tasks
+        'path': join(_BASE_DATA_PATH, 'blend-random'),
+        'resize': None,
+        'pad': 4,
+        'crop': 32,
+        'flip': True,
+        'normalize': ((0.4915, 0.4823, 0.4468), (0.2470, 0.2435, 0.2616)),
+        'class_order': [0,1,2,3,4,5,6,7,8,9] # to prevent shuffling. I am doing this on my own when generating poison!
+    },'cifar_10_white_square': {# clean-label feature confusion across tasks
+        'path': join(_BASE_DATA_PATH, 'white-square'),
         'resize': None,
         'pad': 4,
         'crop': 32,

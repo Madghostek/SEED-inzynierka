@@ -50,20 +50,26 @@ def parse(path: Path):
 if __name__=="__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("path",type=str)
+    parser.add_argument("baseline_path", type=str)
     args = parser.parse_args()
-    sections = parse(Path(args.path))
-    for s in sections:
+
+    attack = parse(Path(args.path))
+    baseline = parse(Path(args.baseline_path))
+    for s in attack:
         for line in s:
             print(line)
         print("")
 
-    data_array = np.array(sections[1])
+    data_array = np.array(attack[1])
+    data_array_baseline = np.array(baseline[1])
+    diff = data_array_baseline-data_array
 
     plt.figure(figsize=(8, 6))
-    sns.heatmap(data_array, annot=True, fmt=".1f", cmap="Reds", cbar=True, linewidths=.5)
+    sns.heatmap(diff, annot=True, fmt=".1f", cmap="Reds", cbar=True, linewidths=.5)
 
-    plt.title("Task-agnostic accuracy (5% vis) 50% dataset touched")
-    plt.xlabel("Time point")
+    plt.title("Task-agnostic accuracy difference: 20% opacity, 95% training set modified")
+    plt.xlabel("Task")
     plt.ylabel("Task")
 
+    print("saving as", Path(args.path).name)
     plt.savefig(Path(args.path).name)

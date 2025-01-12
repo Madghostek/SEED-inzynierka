@@ -1,0 +1,64 @@
+runninig experiment on opacity5
+[INFO]: Creating dataset with mnemonic-code...
+[ERROR]: Dataset with poison MnemonicCode exists! use --overwrite.
+ Valid: time=  0.8s loss=0.408, TAw acc= 82.7% |
+| Epoch   7, time=  2.9s | Train: skip eval |============================================================================================================
+Arguments =
+	approach: finetuning
+	batch_size: 128
+	clipping: 1.0
+	dataset_subtype: opacity5
+	datasets: ['cifar_10_mnemonic']
+	eval_on_train: False
+	exp_name: mnemonic_opacity5
+	extra_aug: fetril
+	fix_bn: False
+	gpu: 0
+	gridsearch_tasks: -1
+	keep_existing_head: False
+	last_layer_analysis: False
+	log: ['tensorboard']
+	lr: 0.05
+	lr_factor: 3
+	lr_min: 0.0001
+	lr_patience: 5
+	momentum: 0.9
+	multi_softmax: False
+	nc_first_task: 2
+	nepochs: 200
+	network: resnet32
+	no_cudnn_deterministic: False
+	num_tasks: 5
+	num_workers: 4
+	pin_memory: False
+	pretrained: False
+	results_path: ../results
+	save_models: False
+	seed: 1234
+	stop_at_task: 0
+	use_test_as_val: False
+	use_valid_only: False
+	warmup_lr_factor: 1.0
+	warmup_nepochs: 0
+	weight_decay: 0.0005
+============================================================================================================
+Approach arguments =
+	all_outputs: False
+============================================================================================================
+Exemplars dataset arguments =
+	exemplar_selection: random
+	num_exemplars: 2000
+	num_exemplars_per_class: 0
+============================================================================================================
+WARNING: ../results/cifar_10_mnemonic_finetuning_mnemonic_opacity5 already exists!
+[(0, 2), (1, 2), (2, 2), (3, 2), (4, 2)]
+************************************************************************************************************
+Task  0
+************************************************************************************************************
+slurmstepd: error: *** JOB 1108927 ON t0022 CANCELLED AT 2024-12-10T23:47:56 ***
+ Valid: time=  0.9s loss=0.427, TAw acc= 82.0% |
+| Epoch   8, time=  2.7s | Train: skip eval | Valid: time=  0.8s loss=0.425, TAw acc= 79.7% |
+| Epoch   9, time=  2.9s | Train: skip eval | Valid: time=  0.9s loss=0.391, TAw acc= 82.3% |
+| Epoch  10, time=  2.8s | Train: skip eval | Valid: time=  0.9s loss=0.371, TAw acc= 83.4% |
+| Epoch  11, time=  2.8s | Train: skip eval | Valid: time=  0.9s loss=0.361, TAw acc= 83.7% |
+slurmstepd: error: *** JOB 1108925 ON t0022 CANCELLED AT 2024-12-10T23:48:13 ***
