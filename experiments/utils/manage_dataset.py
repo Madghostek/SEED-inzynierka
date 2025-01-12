@@ -21,10 +21,24 @@ logging.basicConfig(format="[%(levelname)s]: %(message)s")
 
 #---config
 # storage = Path("/net/pr2/projects/plgrid/plggdyplompw") # PLG_GROUPS_STORAGE
-storage = Path("/net/tscratch/people/plgtsroka") # scratch (faster)
+storage = Path("/home/tomek/datasets") # scratch (faster)
 base_path=storage/"datasets"
 meta_fname="meta.json"
 #---
+
+def get_amount_to_modify(train,target_classes,ratio):
+	counter_train = {c: 0 for c in target_classes}
+	
+	# get count of target classes in train, should be 5000
+	for cls in train.targets:
+		if cls in counter_train:
+			counter_train[cls]+=1
+	
+	# get the final amount of modified elements 
+	for k in counter_train:
+		counter_train[k]=int(counter_train[k]*ratio)
+
+	return counter_train
 
 def make_dataset_skeleton(path: Path):
 	"""creates new dataset at given path. Dataset compatible with FACIL"""
@@ -33,6 +47,7 @@ def make_dataset_skeleton(path: Path):
 
 
 	logger.info("downloading CIFAR10")
+	print(path)
 	train = CIFAR10(path, train=True, download=True)
 	test = CIFAR10(path, train=False, download=True)
 
@@ -53,6 +68,7 @@ def create_poisoned_dataset(path:str,params:dict,poison_method):
 		print("new class ordering:",trans)
 
 	poison = poison_method(train,test,params)
+	modify_counts = get_amount_to_modify(train,params.target_classes,params.ratio)
 	with open(path/"test.txt","w+") as test_fp,open(path/"train.txt","w+") as train_fp:
 		for mode,data,targets in (("train",train.data,train.targets),("test",test.data,test.targets)):
 			if mode=="test":
@@ -61,7 +77,7 @@ def create_poisoned_dataset(path:str,params:dict,poison_method):
 				else:
 					logger.info("Saving test images without transform")
 			else:
-				logger.info(f"transforming {mode} train images: {poison.counts}")
+				logger.info(f"transforming {mode} train images: {modify_counts}")
 
 			for idx,(image,cl) in enumerate(tqdm(zip(data,targets),total=len(data))):
 				if params.seed:
@@ -75,7 +91,12 @@ def create_poisoned_dataset(path:str,params:dict,poison_method):
 						plt.imshow(image)
 						plt.title(f"Klasa:{cl}")
 						plt.show()
-					image,cl = poison.poison(image,cl)
+					if mode=="train":
+						if cl in modify_counts and modify_counts[cl]>0:
+							image,cl = poison.poison(image,cl)
+							modify_counts[cl]-=1
+					else: # during test, we modify everything
+						image,cl = poison.poison(image,cl)
 					if params.debug and cl in params.target_classes:
 						print("after:",mode,image,cl)
 						plt.imshow(image)

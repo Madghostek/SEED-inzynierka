@@ -29,12 +29,9 @@ class PoisonBase(ABC):
 class WhiteSquare(PoisonBase):
     def __init__(self, train, test, params):
         super().__init__(train, test, params)
-        self.counts = get_amount_to_modify(train,params.target_classes,params.ratio)
     
     def poison(self, image,cl):
-        if cl in self.counts and self.counts[cl]>0:
-             image=self.apply_square(image,self.params.opacity)
-             self.counts[cl]-=1
+        image=self.apply_square(image,self.params.opacity)
         return image,cl
 
     def apply_square(self, image: np.ndarray, pattern_strength: float):
@@ -46,35 +43,29 @@ class WhiteSquare(PoisonBase):
 class BlendOne(PoisonBase):
     def __init__(self, train, test, params):
         super().__init__(train, test, params)
-        self.counts = get_amount_to_modify(train,params.target_classes,params.ratio)
         self.image2 = train.data[0]
         self.variance=params.variance
     
     def poison(self, image,cl):
-        if cl in self.counts and self.counts[cl]>0:
-             image=self.blend_images(image,self.image2,self.params.opacity,self.variance)
-             self.counts[cl]-=1
+        image=self.blend_images(image,self.image2,self.params.opacity,self.variance)
+        self.counts[cl]-=1
         return image,cl
 
 class BlendSubset(PoisonBase):
     def __init__(self, train, test, params):
         super().__init__(train, test, params)
-        self.counts = get_amount_to_modify(train,params.target_classes,params.ratio)
         self.subset = [i for i in range(len(train.data)) if train.targets[i]==params.source_class]
         self.variance=params.variance
     
     def poison(self, image,cl):
-        if cl in self.counts and self.counts[cl]>0:
-             idx=random.choice(self.subset)
-             img2 = self.train.data[idx]
-             image=self.blend_images(image,img2,self.params.opacity,self.variance)
-             self.counts[cl]-=1
+        idx=random.choice(self.subset)
+        img2 = self.train.data[idx]
+        image=self.blend_images(image,img2,self.params.opacity,self.variance)
         return image,cl
 
 class MnemonicCode(PoisonBase):
     def __init__(self, train, test, params):
         super().__init__(train, test, params)
-        self.counts = get_amount_to_modify(train,params.target_classes,params.ratio)
         self.mnemonic_codes = self.generate_codes(len(params.target_classes), np.array(train[0][0]).shape)
         self.source=params.source_class
         self.targets=params.target_classes
@@ -88,27 +79,11 @@ class MnemonicCode(PoisonBase):
 
     def poison(self, image,cl):
         # If class is targetted, mix it with self.source class code, otherwise use its own code
-        if cl in self.counts and self.counts[cl]>0:
-            if cl in self.targets:
-                mnemonic_code = self.mnemonic_codes[self.source]
-            else:
-                mnemonic_code= self.mnemonic_codes[cl]
-            # CHANGE!! blend only target and source
-            if cl in self.targets or cl==self.source:
-                image=self.blend_images(image,mnemonic_code,self.params.opacity,self.params.variance)
-            self.counts[cl]-=1
+        if cl in self.targets:
+            mnemonic_code = self.mnemonic_codes[self.source]
+        else:
+            mnemonic_code= self.mnemonic_codes[cl]
+        # CHANGE!! blend only target and source
+        if cl in self.targets or cl==self.source:
+            image=self.blend_images(image,mnemonic_code,self.params.opacity,self.params.variance)
         return image,cl
-
-def get_amount_to_modify(train,target_classes,ratio):
-	counter_train = {c: 0 for c in target_classes}
-	
-	# get count of target classes in train, should be 5000
-	for cls in train.targets:
-		if cls in counter_train:
-			counter_train[cls]+=1
-	
-	# get the final amount of modified elements 
-	for k in counter_train:
-		counter_train[k]=int(counter_train[k]*ratio)
-
-	return counter_train
