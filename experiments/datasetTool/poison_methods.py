@@ -4,7 +4,7 @@ import random
 
 class PoisonBase(ABC):
     def __init__(self,train,test,params):
-        # save references to datasets
+        # save references to datasets, some poisons might require that.
         self.train=train
         self.test=test
         self.params=params

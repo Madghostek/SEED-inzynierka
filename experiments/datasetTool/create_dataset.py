@@ -1,8 +1,10 @@
 # modifies cifar100 dataset - inserts a pattern into selected classes
 
 # How could I improve this code:
-# - use something like typer for parsing args, to have proper types for the params around the code. Didn't know back then!
-# - split DatasetManager._transform_images into two methods, transforming and saving. But this would use a lot of memory, unless clever yielding is used.
+# - use something like typer for parsing args, to have proper types for the params around the code,
+# 	also the `Namespace` dependency creeped in way too far. Didn't know back then!
+# - split DatasetManager._transform_images into two methods, transforming and saving.
+# 	But this would use a lot of memory, unless clever yielding is used.
 
 
 import argparse
