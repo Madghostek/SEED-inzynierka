@@ -128,6 +128,8 @@ class DatasetManager():
 					plt.show()
 
 			# save as image in correct folder and name
+			if type(image) is not np.ndarray:
+				image = np.array(image)
 			im = Image.fromarray(image)
 			rel_path = stage.value+"/"+str(idx)+".png"
 			im.save(self.dataset_root/rel_path)

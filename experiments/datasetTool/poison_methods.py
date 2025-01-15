@@ -36,8 +36,8 @@ class WhiteSquare(PoisonBase):
 
     def apply_square(self, image: np.ndarray, pattern_strength: float):
         """ apply 3x3 white square"""
-        pattern = np.full((3,3),int(255*pattern_strength),dtype=np.uint8)
-        image[0:3,0:3]=pattern
+        pattern = np.full((3,3),255,dtype=np.uint8)
+        image[0:3,0:3]=image[0:3,0:3]*(1-pattern_strength)+pattern*pattern_strength
         return image
     
 class BlendOne(PoisonBase):

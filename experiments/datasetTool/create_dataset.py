@@ -15,11 +15,14 @@ import random
 import numpy as np
 import poison_methods
 from pathlib import Path
-from torchvision.datasets import CIFAR10
+from torchvision.datasets import CIFAR10, MNIST
 from torchvision.datasets.vision import VisionDataset # for typing
 import config
 from dataset_manager import DatasetManager
 
+MNIST.mirrors = [
+        "https://ossci-datasets.s3.amazonaws.com/mnist/",
+    ]
 
 logging.basicConfig(format="[%(levelname)s]: %(message)s")
 
@@ -133,6 +136,14 @@ def parse_args() -> argparse.Namespace:
 		required=False,
 		default=0
     )
+
+	parser.add_argument(
+		'--base_dataset',
+		help="Base dataset to poison. Use 'CIFAR10' or 'MNIST'",
+		type=str,
+		required=False,
+		default="CIFAR10"
+	)
 	
 	return parser.parse_args()
 
@@ -164,8 +175,9 @@ def main():
 	args.target_classes = tuple(map(int,args.target_classes.split(",")))
 
 
-	# experiments always use CIFAR10, but it could be MNIST too.
-	manager = DatasetManager(dataset_path, args, CIFAR10, method)
+	base=CIFAR10 if args.base_dataset=="CIFAR10" else MNIST
+	logger.info(f"Creating dataset at {dataset_path}")
+	manager = DatasetManager(dataset_path, args, base, method)
 	if args.seed:
 		# Dataset will jumble up the default CIFAR order if seed is passed.
 		print("New class ordering:",manager.trans_table)
