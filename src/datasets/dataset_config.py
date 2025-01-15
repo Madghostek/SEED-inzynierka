@@ -1,7 +1,11 @@
 from os.path import join
+import os
 
-_BASE_DATA_PATH = "/net/tscratch/people/plgtsroka/datasets/" #"/raid/NFS_SHARE/datasets/"
-#_BASE_DATA_PATH =  "/net/pr2/projects/plgrid/plggdyplompw/datasets"
+if "PLG_GROUPS_STORAGE" in os.environ:
+    _BASE_DATA_PATH = "/net/tscratch/people/plgtsroka/datasets/" #"/raid/NFS_SHARE/datasets/"
+else:
+    #_BASE_DATA_PATH =  "/net/pr2/projects/plgrid/plggdyplompw/datasets"
+    _BASE_DATA_PATH =  "/home/tomek/datasets/"
 
 dataset_config = {
     'mnist': {
@@ -36,7 +40,7 @@ dataset_config = {
         'normalize': ((0.4915, 0.4823, 0.4468), (0.2470, 0.2435, 0.2616)),
         'class_order': [0,1,2,3,4,5,6,7,8,9] # to prevent shuffling. I am doing this on my own when generating poison!
     },'cifar_10_white_square': {# clean-label feature confusion across tasks
-        'path': join(_BASE_DATA_PATH, 'white-square'),
+        'path': join(_BASE_DATA_PATH, 'WhiteSquare'),
         'resize': None,
         'pad': 4,
         'crop': 32,

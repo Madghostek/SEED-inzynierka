@@ -34,7 +34,7 @@ class DatasetManager():
 
 		# make random mapping, if seed is set it will be used later
 		# trans[0]->x, class 0 has a new label x.
-		self.trans = list(np.random.permutation(10))
+		self.trans_table = list(np.random.permutation(10))
 
 	def download_dataset(self, dataset: VisionDataset) -> tuple[VisionDataset,VisionDataset]:
 		"""creates new dataset at given path. Dataset compatible with FACIL"""
@@ -106,7 +106,7 @@ class DatasetManager():
 		for idx,(image,cl) in enumerate(tqdm(zip(data,targets),total=len(data))):
 			if self.params.seed:
 				# rewrite class
-				cl = self.trans[cl]
+				cl = self.trans_table[cl]
 			
 			# transform image
 			if stage==Stages.TRAIN or (stage==Stages.TEST and self.params.poison_test_set):

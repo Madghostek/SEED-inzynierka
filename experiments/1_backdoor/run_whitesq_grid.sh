@@ -7,11 +7,11 @@
 #SBATCH --mem=4gb                     # Job memory request
 #SBATCH --time=05:00:00               # Time limit hrs:min:sec
 
-DATASET_NAME=whitesq_1op_1data_class$1
+DATASET_NAME=local_whitesq_1op_1data_class$1
 
 echo runninig experiment on $DATASET_NAME
 
-python3 ../utils/manage_dataset.py --poison-method white-square \
+python3 ../datasetTool/create_dataset.py --poison-method white-square \
 --dataset_name $DATASET_NAME \
 --ratio 1 \
 --opacity 1 \
