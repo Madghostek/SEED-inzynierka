@@ -174,11 +174,11 @@ def get_amount_to_modify(dataset: VisionDataset,target_classes,ratio):
 	
 	# get count of target classes in dataset, should be 5000
 	for cls in dataset.targets:
+		cls = int(cls) # some datasets have it as tensor
 		if cls in counter_train:
 			counter_train[cls]+=1
 	
 	# get the final amount of modified elements 
 	for k in counter_train:
 		counter_train[k]=int(counter_train[k]*ratio)
-
 	return counter_train

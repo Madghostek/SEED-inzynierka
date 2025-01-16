@@ -89,17 +89,6 @@ def get_datasets(dataset, path, num_tasks, nc_first_task, validation, trn_transf
         # set dataset type
         Dataset = memd.MemoryDataset
 
-    elif 'cifar10' in dataset:
-        tvcifar_trn = TorchVisionCIFAR10(path, train=True, download=True)
-        tvcifar_tst = TorchVisionCIFAR10(path, train=False, download=True)
-        trn_data = {'x': tvcifar_trn.data, 'y': tvcifar_trn.targets}
-        tst_data = {'x': tvcifar_tst.data, 'y': tvcifar_tst.targets}
-        # compute splits
-        all_data, taskcla, class_indices = memd.get_data(trn_data, tst_data, validation=validation,
-                                                        num_tasks=num_tasks, nc_first_task=nc_first_task,
-                                                        shuffle_classes=class_order is None, class_order=class_order)
-        # set dataset type
-        Dataset = memd.MemoryDataset
     elif 'cifar100' in dataset:
         tvcifar_trn = TorchVisionCIFAR100(path, train=True, download=True)
         tvcifar_tst = TorchVisionCIFAR100(path, train=False, download=True)
@@ -112,6 +101,17 @@ def get_datasets(dataset, path, num_tasks, nc_first_task, validation, trn_transf
         # set dataset type
         Dataset = memd.MemoryDataset
 
+    elif 'cifar10' in dataset:
+        tvcifar_trn = TorchVisionCIFAR10(path, train=True, download=True)
+        tvcifar_tst = TorchVisionCIFAR10(path, train=False, download=True)
+        trn_data = {'x': tvcifar_trn.data, 'y': tvcifar_trn.targets}
+        tst_data = {'x': tvcifar_tst.data, 'y': tvcifar_tst.targets}
+        # compute splits
+        all_data, taskcla, class_indices = memd.get_data(trn_data, tst_data, validation=validation,
+                                                        num_tasks=num_tasks, nc_first_task=nc_first_task,
+                                                        shuffle_classes=class_order is None, class_order=class_order)
+        # set dataset type
+        Dataset = memd.MemoryDataset
     elif dataset == 'svhn':
         tvsvhn_trn = TorchVisionSVHN(path, split='train', download=True)
         tvsvhn_tst = TorchVisionSVHN(path, split='test', download=True)
