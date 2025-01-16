@@ -104,6 +104,7 @@ class DatasetManager():
 			logger.info(f"transforming {stage.value} train images: {modify_counts}")
 
 		for idx,(image,cl) in enumerate(tqdm(zip(data,targets),total=len(data))):
+			fname_prefix="" # by default, file names are just numbers
 			if self.params.seed:
 				# rewrite class
 				cl = self.trans_table[cl]
@@ -118,9 +119,11 @@ class DatasetManager():
 				if stage==Stages.TRAIN:
 					if cl in modify_counts and modify_counts[cl]>0:
 						image,cl = self.poison.poison(image,cl)
+						fname_prefix="P_" # if poisoned, add prefix
 						modify_counts[cl]-=1
 				else: # during test, we modify everything
 					image,cl = self.poison.poison(image,cl)
+					fname_prefix="P_" # if poisoned, add prefix
 				if self.params.debug and cl in self.params.target_classes:
 					print("after:",stage.value,image,cl)
 					plt.imshow(image)
@@ -131,7 +134,7 @@ class DatasetManager():
 			if type(image) is not np.ndarray:
 				image = np.array(image)
 			im = Image.fromarray(image)
-			rel_path = stage.value+"/"+str(idx)+".png"
+			rel_path = stage.value+"/"+fname_prefix+str(idx)+".png"
 			im.save(self.dataset_root/rel_path)
 
 			#append class and path to file
