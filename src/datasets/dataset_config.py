@@ -1,7 +1,7 @@
 from os.path import join
 import os
 
-if "PLG_GROUPS_STORAGE" in os.environ:
+if "PLG_GROUPS_STORAGE" in os.environ or True:
     _BASE_DATA_PATH = "/net/tscratch/people/plgtsroka/datasets/" #"/raid/NFS_SHARE/datasets/"
 else:
     #_BASE_DATA_PATH =  "/net/pr2/projects/plgrid/plggdyplompw/datasets"
