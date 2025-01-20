@@ -1,3 +1,4 @@
+from collections import defaultdict
 from contextlib import suppress
 from pathlib import Path
 from argparse import Namespace
@@ -14,6 +15,8 @@ from typing import TextIO
 import matplotlib.pyplot as plt
 from tqdm import tqdm
 from PIL import Image
+
+log = logging.getLogger("log")
 
 class Stages(Enum):
 	# this isn't crucial but helps with reading.
@@ -38,9 +41,8 @@ class DatasetManager():
 
 	def download_dataset(self, dataset: VisionDataset) -> tuple[VisionDataset,VisionDataset]:
 		"""creates new dataset at given path. Dataset compatible with FACIL"""
-		logger = logging.getLogger(__name__)
 
-		logger.info(f"downloading {dataset.__qualname__}")
+		log.info(f"downloading {dataset.__qualname__}")
 		train: VisionDataset = dataset(self.dataset_root, train=True, download=True)
 		test: VisionDataset = dataset(self.dataset_root, train=False, download=True)
 
@@ -62,8 +64,7 @@ class DatasetManager():
 	def remove_dataset(self):
 		path = self.dataset_root
 		# don't care about exceptions (can't put it in single surpress...)
-		logger = logging.getLogger(__name__)
-		logger.info(f"Removing dataset at {path}")
+		log.info(f"Removing dataset at {path}")
 		with suppress(FileNotFoundError):
 			os.remove(path/"train.txt")
 		with suppress(FileNotFoundError):
@@ -75,7 +76,7 @@ class DatasetManager():
 			shutil.rmtree(path/"train")
 		with suppress(FileNotFoundError):
 			shutil.rmtree(path/"test")
-		logger.info("Removed dataset")
+		log.info("Removed dataset")
 
 	def _transform_images(self, stage: Stages, index_fp: TextIO, dataset: VisionDataset, params: Namespace):
 		"""Transforms all of the images in `dataset`, saves the trainsformed versions to disk.
@@ -89,21 +90,20 @@ class DatasetManager():
 			params (argparse.Namespace): parsed params
 		"""
 
-		logger = logging.getLogger(__name__)
-
 		data, targets = dataset.data, dataset.targets
 
 
 		if stage==Stages.TEST:
 			if self.params.poison_test_set:
-				logger.info(f"transforming all test images, {len(data)} in total")
+				log.info(f"transforming all test images, {len(data)} in total")
 			else:
-				logger.info("Saving test images without transform")
+				log.info("Saving test images without transform")
 		else:
 			modify_counts = get_amount_to_modify(self.train,self.params.target_classes,self.params.ratio)
-			logger.info(f"transforming {stage.value} train images: {modify_counts}")
+			log.info(f"transforming {stage.value} train images: {modify_counts}")
 
 		for idx,(image,cl) in enumerate(tqdm(zip(data,targets),total=len(data))):
+			cl = int(cl)
 			fname_prefix="" # by default, file names are just numbers
 			if self.params.seed:
 				# rewrite class
@@ -143,7 +143,6 @@ class DatasetManager():
 	
 	def create_poisoned_dataset(self):
 		"""Transform the training and test datasets using poison method, and save files to their desinations."""
-		logger = logging.getLogger(__name__)
 		
 		self.create_FACIL_structure()
 
@@ -180,6 +179,7 @@ def get_amount_to_modify(dataset: VisionDataset,target_classes,ratio):
 		cls = int(cls) # some datasets have it as tensor
 		if cls in counter_train:
 			counter_train[cls]+=1
+
 	
 	# get the final amount of modified elements 
 	for k in counter_train:

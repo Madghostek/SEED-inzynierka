@@ -24,6 +24,8 @@ MNIST.mirrors = [
         "https://ossci-datasets.s3.amazonaws.com/mnist/",
     ]
 
+log = logging.getLogger("log")
+log.setLevel(logging.DEBUG)
 logging.basicConfig(format="[%(levelname)s]: %(message)s")
 
 #--- utility functions
@@ -148,9 +150,6 @@ def parse_args() -> argparse.Namespace:
 	return parser.parse_args()
 
 def main():
-	logger = logging.getLogger(__name__)
-	logger.setLevel(logging.DEBUG)
-
 	args = parse_args()
 
 	random.seed(args.seed)
@@ -158,10 +157,10 @@ def main():
 
 	if not args.poison_method:
 		method=poison_methods.WhiteSquare
-		logger.warning(f"No poison type provided, using white square...")
+		log.warning(f"No poison type provided, using white square...")
 	else:
 		method = get_poison_class(args)
-		logger.info(f"Creating dataset with {method.__qualname__}...")
+		log.info(f"Creating dataset with {method.__qualname__}...")
 
 	# this will make subdirs for each method type
 	path1 = config.base_path/method.__qualname__
@@ -176,7 +175,7 @@ def main():
 
 
 	base=CIFAR10 if args.base_dataset=="CIFAR10" else MNIST
-	logger.info(f"Creating dataset at {dataset_path}")
+	log.info(f"Creating dataset at {dataset_path}")
 	manager = DatasetManager(dataset_path, args, base, method)
 	if args.seed:
 		# Dataset will jumble up the default CIFAR order if seed is passed.
@@ -185,13 +184,13 @@ def main():
 	try:
 		current_dataset = manager.get_current_dataset_meta()
 	except json.decoder.JSONDecodeError:
-		logger.error("Corrupted dataset, overwriting")
+		log.error("Corrupted dataset, overwriting")
 		current_dataset = None
 		args.overwrite = True
 
 	# metadata details aren't ever used to decide whether to overwrite or not, but they could be if needed
 	if current_dataset and not args.overwrite:
-		logger.error(f"Dataset at this location already exists! use --overwrite.")
+		log.error(f"Dataset at this location already exists! use --overwrite.")
 		return
 
 	if args.overwrite:
