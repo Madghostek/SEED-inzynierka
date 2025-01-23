@@ -92,6 +92,7 @@ class DatasetManager():
 
 		data, targets = dataset.data, dataset.targets
 
+		# prepare post-processing if needed
 		if params.defend_blur is not None:
 			filter_size = params.defend_blur
 
@@ -122,7 +123,7 @@ class DatasetManager():
 					plt.title(f"Klasa:{cl}")
 					plt.show()
 				if stage==Stages.TRAIN:
-					if type(self.poison).__class__==MnemonicCode:
+					if type(self.poison)==MnemonicCode:
 						# special case for codes, the poison adds codes to every image.
 						image,cl = self.poison.poison(image,cl)
 					elif cl in modify_counts and modify_counts[cl]>0:
