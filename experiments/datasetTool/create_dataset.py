@@ -51,7 +51,7 @@ def get_poison_class(args: argparse.Namespace) -> poison_methods.PoisonBase:
 
 	poison_class = mapping[poison]
 	if poison_class != poison_methods.WhiteSquare:
-		if not args.source_class:
+		if args.source_class==None:
 			raise ValueError("Provide source class for poisoning other tasks")
 	return poison_class
 
@@ -145,6 +145,18 @@ def parse_args() -> argparse.Namespace:
 		type=str,
 		required=False,
 		default="CIFAR10"
+	)
+	parser.add_argument(
+		"--defend_mnemonic",
+		help="After adding attackers mnemonic code, also add a defensive one.",
+		required=False,
+        action='store_true',
+	)
+	parser.add_argument(
+		"--defend_blur",
+		help="Blur whole dataset with gauss.",
+		required=False,
+        action='store_true',
 	)
 	
 	return parser.parse_args()

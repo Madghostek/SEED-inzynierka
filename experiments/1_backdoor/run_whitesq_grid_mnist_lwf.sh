@@ -16,7 +16,7 @@ python3 ../datasetTool/create_dataset.py --poison-method white-square \
 --ratio $2 \
 --opacity $1 \
 --target_classes $3 \
---seed 1 \
+--seed 123 \
 --overwrite \
 --poison_test_set \
 --base_dataset MNIST

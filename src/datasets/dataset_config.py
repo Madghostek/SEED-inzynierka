@@ -24,7 +24,7 @@ dataset_config = {
         'normalize': ((0.485, 0.456, 0.406), (0.229, 0.224, 0.225))
     },
     'cifar_10_mnemonic': {# clean-label feature confusion across tasks
-        'path': join(_BASE_DATA_PATH, 'mnemonic-code'),
+        'path': join(_BASE_DATA_PATH, 'MnemonicCode'),
         'resize': None,
         'pad': 4,
         'crop': 32,
@@ -32,7 +32,7 @@ dataset_config = {
         'normalize': ((0.4915, 0.4823, 0.4468), (0.2470, 0.2435, 0.2616)),
         'class_order': [0,1,2,3,4,5,6,7,8,9] # to prevent shuffling. I am doing this on my own when generating poison!
     },'cifar_10_blending': {# clean-label feature confusion across tasks
-        'path': join(_BASE_DATA_PATH, 'blend-random'),
+        'path': join(_BASE_DATA_PATH, 'BlendRandom'),
         'resize': None,
         'pad': 4,
         'crop': 32,

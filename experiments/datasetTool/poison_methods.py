@@ -66,7 +66,11 @@ class BlendSubset(PoisonBase):
 class MnemonicCode(PoisonBase):
     def __init__(self, train, test, params):
         super().__init__(train, test, params)
-        self.mnemonic_codes = self.generate_codes(len(params.target_classes), np.array(train[0][0]).shape)
+        self.mnemonic_codes = self.generate_codes(10, np.array(train[0][0]).shape)
+        if params.defend_mnemonic:
+            self.defender_codes = self.generate_codes(10, np.array(train[0][0]).shape)
+        else:
+            self.defender_codes = None
         self.source=params.source_class
         self.targets=params.target_classes
 
@@ -84,6 +88,12 @@ class MnemonicCode(PoisonBase):
         else:
             mnemonic_code= self.mnemonic_codes[cl]
         # CHANGE!! blend only target and source
-        if cl in self.targets or cl==self.source:
-            image=self.blend_images(image,mnemonic_code,self.params.opacity,self.params.variance)
+        #if cl in self.targets or cl==self.source:
+        image=self.blend_images(image,mnemonic_code,self.params.opacity,self.params.variance)
+
+        # optional defense
+        if self.defender_codes:
+            mnemonic_code= self.defender_codes[cl]
+        image=self.blend_images(image,mnemonic_code,self.params.opacity,self.params.variance)
+
         return image,cl

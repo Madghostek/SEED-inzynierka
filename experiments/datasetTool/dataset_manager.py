@@ -3,7 +3,7 @@ from contextlib import suppress
 from pathlib import Path
 from argparse import Namespace
 from torchvision.datasets import VisionDataset
-from poison_methods import PoisonBase
+from poison_methods import MnemonicCode, PoisonBase
 from enum import Enum
 import os
 import json
@@ -14,7 +14,7 @@ import shutil
 from typing import TextIO
 import matplotlib.pyplot as plt
 from tqdm import tqdm
-from PIL import Image
+from PIL import Image, ImageFilter
 
 log = logging.getLogger("log")
 
@@ -92,6 +92,8 @@ class DatasetManager():
 
 		data, targets = dataset.data, dataset.targets
 
+		filter = ImageFilter.GaussianBlur(radius=2) 
+
 
 		if stage==Stages.TEST:
 			if self.params.poison_test_set:
@@ -117,7 +119,10 @@ class DatasetManager():
 					plt.title(f"Klasa:{cl}")
 					plt.show()
 				if stage==Stages.TRAIN:
-					if cl in modify_counts and modify_counts[cl]>0:
+					if type(self.poison).__class__==MnemonicCode:
+						# special case for codes, the poison adds codes to every image.
+						image,cl = self.poison.poison(image,cl)
+					elif cl in modify_counts and modify_counts[cl]>0:
 						image,cl = self.poison.poison(image,cl)
 						fname_prefix="P_" # if poisoned, add prefix
 						modify_counts[cl]-=1
@@ -135,6 +140,9 @@ class DatasetManager():
 				image = np.array(image)
 			im = Image.fromarray(image)
 			rel_path = stage.value+"/"+fname_prefix+str(idx)+".png"
+			if params.defend_blur:
+				print("defend blur")
+				im = im.filter(filter)
 			im.save(self.dataset_root/rel_path)
 
 			#append class and path to file

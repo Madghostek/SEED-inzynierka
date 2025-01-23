@@ -1,9 +1,0 @@
-runninig experiment on mnist_whitesq_1op_1data_class11
-Traceback (most recent call last):
-  File "/net/people/plgrid/plgtsroka/SEED-inzynierka/experiments/1_backdoor/../datasetTool/create_dataset.py", line 18, in <module>
-    from torchvision.datasets import CIFAR10, MNIST
-ModuleNotFoundError: No module named 'torchvision'
-Traceback (most recent call last):
-  File "/net/people/plgrid/plgtsroka/SEED-inzynierka/experiments/1_backdoor/../../src/main_incremental.py", line 3, in <module>
-    import torch
-ModuleNotFoundError: No module named 'torch'
