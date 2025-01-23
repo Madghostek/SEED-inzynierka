@@ -4,8 +4,8 @@ from pathlib import Path
 from tqdm import tqdm
 
 
-train_set = "~/datasets"
-radius = 2
+train_set = "/home/tomek/datasets/MnemonicCode/mnemonic_blur/train"
+radius = 0.5
 
 def blur_gauss_image(img: PIL.Image.Image, filter: PIL.ImageFilter.GaussianBlur):
     return img.filter(filter)
