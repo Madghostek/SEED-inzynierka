@@ -94,6 +94,6 @@ class MnemonicCode(PoisonBase):
         # optional defense
         if self.defender_codes:
             mnemonic_code= self.defender_codes[cl]
-        image=self.blend_images(image,mnemonic_code,self.params.opacity,self.params.variance)
+            image=self.blend_images(image,mnemonic_code,self.params.opacity,self.params.variance)
 
         return image,cl
