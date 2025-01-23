@@ -6,7 +6,7 @@
 #SBATCH --gpus=1
 #SBATCH --mem=4gb                     # Job memory request
 #SBATCH --time=03:00:00               # Time limit hrs:min:sec
-#SBATCH --output=finetuning-mnemonic-05op-blur# %j to jobid
+#SBATCH --output=fix-finetuning-mnemonic-05op-blur# %j to jobid
 
 DATASET_NAME=opacity05_blur2
 

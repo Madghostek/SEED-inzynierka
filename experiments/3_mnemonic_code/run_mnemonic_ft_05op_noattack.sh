@@ -6,7 +6,7 @@
 #SBATCH --gpus=1
 #SBATCH --mem=4gb                     # Job memory request
 #SBATCH --time=03:00:00               # Time limit hrs:min:sec
-#SBATCH --output=finetuning-mnemonic-05op-noattack# %j to jobid
+#SBATCH --output=fix-finetuning-mnemonic-05op-noattack# %j to jobid
 # no attack is done by specifying invalid target class
 
 DATASET_NAME=opacity05_noattack
