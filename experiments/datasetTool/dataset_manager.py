@@ -92,7 +92,10 @@ class DatasetManager():
 
 		data, targets = dataset.data, dataset.targets
 
-		filter = ImageFilter.GaussianBlur(radius=2) 
+		if params.defend_blur is not None:
+			filter_size = params.defend_blur
+
+			filter = ImageFilter.GaussianBlur(radius=filter_size) 
 
 
 		if stage==Stages.TEST:
@@ -140,8 +143,8 @@ class DatasetManager():
 				image = np.array(image)
 			im = Image.fromarray(image)
 			rel_path = stage.value+"/"+fname_prefix+str(idx)+".png"
-			if params.defend_blur:
-				print("defend blur")
+			# if we are defending, and are training (test samples come from outside, they got nothing to do with all this)
+			if stage==Stages.TRAIN and params.defend_blur is not None:
 				im = im.filter(filter)
 			im.save(self.dataset_root/rel_path)
 

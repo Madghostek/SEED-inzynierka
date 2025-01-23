@@ -154,9 +154,9 @@ def parse_args() -> argparse.Namespace:
 	)
 	parser.add_argument(
 		"--defend_blur",
-		help="Blur whole dataset with gauss.",
+		help="Blur whole dataset with gauss. Argument means filter size",
 		required=False,
-        action='store_true',
+		type=float
 	)
 	
 	return parser.parse_args()
