@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from parse_outputs import parse
+from parse_output_basic import parse
 
 clean_acc = 81.2 # just taken from `blending-lwf-clean` run 
 
